@@ -92,9 +92,11 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Task.txt" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Server\ServerFacade.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
