@@ -73,6 +73,8 @@ namespace Panoramio
             if (args.PreviousExecutionState == ApplicationExecutionState.Running)
                 return;
 
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+
             DisplayRootView<MainView>();
         }
 

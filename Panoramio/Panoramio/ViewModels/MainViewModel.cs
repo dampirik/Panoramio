@@ -7,8 +7,27 @@ namespace Panoramio.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private Geopoint _geoCenter;
+        private bool _serverIsUnavailable;
+        public bool ServerIsUnavailable
+        {
+            get { return _serverIsUnavailable; }
+            set
+            {
+                Set(ref _serverIsUnavailable, value);
+            }
+        }
 
+        private object _selectedItem;
+        public object SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                Set(ref _selectedItem, value);
+            }
+        }
+
+        private Geopoint _geoCenter;
         public Geopoint GeoCenter
         {
             get { return _geoCenter; }
@@ -44,6 +63,16 @@ namespace Panoramio.ViewModels
         {
             string status = "MapTapped at \nLatitude:" + tappedGeoPosition.Latitude + "\nLongitude: " + tappedGeoPosition.Longitude;
             //rootPage.NotifyUser(status, NotifyType.StatusMessage);
+
+        }
+
+        public void Share()
+        {
+
+        }
+
+        public void Save()
+        {
 
         }
     }
