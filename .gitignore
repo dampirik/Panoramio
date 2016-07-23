@@ -150,5 +150,5 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # dll's
-!dlls/*
+!Panoramio/Panoramio/dll/*
 

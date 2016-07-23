@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Caliburn.Micro;
+using Panoramio.Common;
+using Panoramio.ViewModels;
+using Panoramio.Views;
 
 namespace Panoramio
 {
     /// <summary>
     /// Обеспечивает зависящее от конкретного приложения поведение, дополняющее класс Application по умолчанию.
     /// </summary>
-    sealed partial class App : Application
+    sealed partial class App
     {
         /// <summary>
         /// Инициализирует одноэлементный объект приложения.  Это первая выполняемая строка разрабатываемого
@@ -31,8 +29,51 @@ namespace Panoramio
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
-            this.InitializeComponent();
-            this.Suspending += OnSuspending;
+
+            InitializeComponent();
+        }
+
+        private WinRTContainer _container;
+
+        protected override void Configure()
+        {
+            _container = new WinRTContainer();
+
+            _container.RegisterWinRTServices();
+
+            _container.PerRequest<MainViewModel>();
+            _container.PerRequest<WindowManager>();
+        }
+
+        protected override object GetInstance(Type service, string key)
+        {
+            var instance = _container.GetInstance(service, key);
+            if (instance != null)
+                return instance;
+            throw new Exception("Could not locate any instances.");
+        }
+
+        protected override IEnumerable<object> GetAllInstances(Type service)
+        {
+            return _container.GetAllInstances(service);
+        }
+
+        protected override void BuildUp(object instance)
+        {
+            _container.BuildUp(instance);
+        }
+
+        protected override void PrepareViewFirst(Frame rootFrame)
+        {
+            _container.RegisterNavigationService(rootFrame);
+        }
+
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        {
+            if (args.PreviousExecutionState == ApplicationExecutionState.Running)
+                return;
+
+            DisplayRootView<MainView>();
         }
 
         /// <summary>
@@ -40,69 +81,76 @@ namespace Panoramio
         /// например, если приложение запускается для открытия конкретного файла.
         /// </summary>
         /// <param name="e">Сведения о запросе и обработке запуска.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
-        {
+//        protected override void OnLaunched(LaunchActivatedEventArgs args)
+//        {
+//            Initialize();
 
-#if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
+//#if DEBUG
+//            if (System.Diagnostics.Debugger.IsAttached)
+//            {
+//                DebugSettings.EnableFrameRateCounter = true;
+//            }
+//#endif
+//            if (args.PreviousExecutionState == ApplicationExecutionState.Running)
+//            {
+//                return;
+//            }
 
-            Frame rootFrame = Window.Current.Content as Frame;
+//            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 
-            // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
-            // только обеспечьте активность окна
-            if (rootFrame == null)
-            {
-                // Создание фрейма, который станет контекстом навигации, и переход к первой странице
-                rootFrame = new Frame();
+//            //Frame rootFrame = Window.Current.Content as Frame;
 
-                rootFrame.NavigationFailed += OnNavigationFailed;
+//            //// Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
+//            //// только обеспечьте активность окна
+//            //if (RootFrame == null)
+//            //{
+//            //    // Создание фрейма, который станет контекстом навигации, и переход к первой странице
+//            //    RootFrame = new Frame();
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Загрузить состояние из ранее приостановленного приложения
-                }
+//            //    RootFrame.NavigationFailed += OnNavigationFailed;
 
-                // Размещение фрейма в текущем окне
-                Window.Current.Content = rootFrame;
-            }
+//            //    if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
+//            //    {
+//            //        //TODO: Загрузить состояние из ранее приостановленного приложения
+//            //    }
 
-            if (rootFrame.Content == null)
-            {
-                // Если стек навигации не восстанавливается для перехода к первой странице,
-                // настройка новой страницы путем передачи необходимой информации в качестве параметра
-                // параметр
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
-            }
-            // Обеспечение активности текущего окна
-            Window.Current.Activate();
-        }
+//            //    // Размещение фрейма в текущем окне
+//            //    Window.Current.Content = rootFrame;
+//            //}
 
-        /// <summary>
-        /// Вызывается в случае сбоя навигации на определенную страницу
-        /// </summary>
-        /// <param name="sender">Фрейм, для которого произошел сбой навигации</param>
-        /// <param name="e">Сведения о сбое навигации</param>
+//            if (RootFrame.Content == null)
+//            {
+//                DisplayRootView<MainView>();
+//            }
+//        }
+        
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
-
-        /// <summary>
-        /// Вызывается при приостановке выполнения приложения.  Состояние приложения сохраняется
-        /// без учета информации о том, будет ли оно завершено или возобновлено с неизменным
-        /// содержимым памяти.
-        /// </summary>
-        /// <param name="sender">Источник запроса приостановки.</param>
-        /// <param name="e">Сведения о запросе приостановки.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        
+        protected override void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Сохранить состояние приложения и остановить все фоновые операции
-            deferral.Complete();
+            e.Handled = true;
+
+            var ex = e.Exception;
+
+            var error = ex.Message + "\n" + ex.StackTrace;
+
+            base.OnUnhandledException(sender, e);
+
+#pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                async () =>
+                      {
+#if DEBUG
+                          await new MessageDialog(error, "Error").ShowAsync();
+#else
+                    await  new MessageDialog("We are having some temporary issues. Please try again later. Thanks!", "Error").ShowAsync();
+#endif
+
+                      });
+#pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
         }
     }
 }

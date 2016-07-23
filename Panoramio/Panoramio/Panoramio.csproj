@@ -96,12 +96,27 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\WindowManager.cs" />
+    <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="PushpinControl\BasePushpinControl.cs" />
+    <Compile Include="PushpinControl\ClusterPushpinControl.cs" />
+    <Compile Include="PushpinControl\IPushpinModel.cs" />
+    <Compile Include="PushpinControl\PushpinControl.cs" />
+    <Compile Include="PushpinControl\PushpinContainer.cs" />
+    <Compile Include="PushpinControl\PushpinController.cs" />
+    <Compile Include="Server\ConnectHelper.cs" />
+    <Compile Include="Server\Data\MapLocation.cs" />
+    <Compile Include="Server\Data\PhotoItem.cs" />
+    <Compile Include="Server\Data\Photos.cs" />
+    <Compile Include="Server\ExecuteResult.cs" />
     <Compile Include="Server\ServerFacade.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -126,7 +141,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
+    <Page Include="Views\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PushpinControl\PushpinStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
