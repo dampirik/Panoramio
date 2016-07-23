@@ -66,9 +66,6 @@ namespace Panoramio.PushpinControl
             // consider each pin in turn
             foreach (var pin in _partners)
             {
-                //var newPinContainer = new PushpinContainer(pin,
-                //  _map.LocationToViewportPoint(pin.Location));
-
                 Windows.Foundation.Point point;
                 _map.GetOffsetFromLocation(pin.Location, out point);
                 var newPinContainer = new PushpinContainer(pin, point);
@@ -100,37 +97,39 @@ namespace Panoramio.PushpinControl
             }
 
             // asynchronously update the map
+#pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
             _map.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                var selectedPushpin = _map.Children.OfType<PushpinControl>().FirstOrDefault(s => s.IsSelected);
+             {
+                 var selectedPushpin = _map.Children.OfType<PushpinControl>().FirstOrDefault(s => s.IsSelected);
 
-                var isCreateSelectedPushpin = false;
+                 var isCreateSelectedPushpin = false;
 
-                _map.Children.Clear(); //TODO точки следует добавлять, удалять не нужны, а не чистить циликом.
+                 _map.Children.Clear(); //TODO точки следует добавлять, удалять не нужны, а не чистить циликом.
                 foreach (var projectedPin in pinsToAdd.Where(pin => PointIsVisibleInMap(pin.ScreenLocation, _map)))
-                {
-                    var children = projectedPin.GetMapElement();
+                 {
+                     var children = projectedPin.GetMapElement();
 
-                    var pushpin = children as PushpinControl;
-                    if (pushpin != null && selectedPushpin != null)
-                    {
-                        if (ReferenceEquals(selectedPushpin.ParentModel, pushpin.ParentModel))
-                        {
-                            pushpin.IsSelected = true;
-                            isCreateSelectedPushpin = true;
-                        }
-                    }
+                     var pushpin = children as PushpinControl;
+                     if (pushpin != null && selectedPushpin != null)
+                     {
+                         if (ReferenceEquals(selectedPushpin.ParentModel, pushpin.ParentModel))
+                         {
+                             pushpin.IsSelected = true;
+                             isCreateSelectedPushpin = true;
+                         }
+                     }
 
-                    _map.Children.Add(children);
+                     _map.Children.Add(children);
 
-                    children.Tapped += OnChildrenTapped;
-                }
+                     children.Tapped += OnChildrenTapped;
+                 }
 
-                if (selectedPushpin != null && !isCreateSelectedPushpin)
-                {
-                    OnPushpinSelected(null);
-                }
-            });
+                 if (selectedPushpin != null && !isCreateSelectedPushpin)
+                 {
+                     OnPushpinSelected(null);
+                 }
+             });
+#pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
         }
 
         private void OnChildrenTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)

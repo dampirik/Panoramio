@@ -17,7 +17,7 @@ namespace Panoramio.Helpers
             var longitude2 = point2.Position.Longitude;
             var latitude2 = point2.Position.Latitude;
 
-            var Radius = 6371; //radius of earth in Km
+            const int Radius = 6371; //radius of earth in Km
             var lat1 = latitude1;
             var lat2 = latitude2;
             var lon1 = longitude1;
