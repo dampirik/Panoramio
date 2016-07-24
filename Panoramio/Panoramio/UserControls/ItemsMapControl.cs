@@ -94,18 +94,7 @@ namespace Panoramio.UserControls
 
         #region SelectedItem
         public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
-            "SelectedItem", typeof(IMapItem), typeof(ItemsMapControl), new PropertyMetadata(
-                null, OnSelectedItemPropertyChanged));
-
-        private static void OnSelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = d as ItemsMapControl;
-            if (control?._map != null && e.NewValue != e.OldValue)
-            {
-                //control._map.ZoomLevel = (double)e.NewValue;
-                //TODO
-            }
-        }
+            "SelectedItem", typeof(IMapItem), typeof(ItemsMapControl), new PropertyMetadata(null));
 
         public IMapItem SelectedItem
         {
@@ -207,29 +196,11 @@ namespace Panoramio.UserControls
 #pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
             _map.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                var selectedPushpin = _map.Children.OfType<MapItemControl>().FirstOrDefault(s => s.IsSelected);
-
-                var isCreateSelectedPushpin = false;
-
                 foreach (var item in itemsToAdd.Where(pin => PointIsVisibleInMap(pin.ScreenLocation, _map)))
                 {
-                    if (selectedPushpin != null)
-                    {
-                        if (ReferenceEquals(selectedPushpin.ParentModel, item.ParentModel))
-                        {
-                            item.IsSelected = true;
-                            isCreateSelectedPushpin = true;
-                        }
-                    }
-
                     _map.Children.Add(item);
 
                     item.Tapped += OnChildrenTapped;
-                }
-
-                if (selectedPushpin != null && !isCreateSelectedPushpin)
-                {
-                    SelectedItem = null;
                 }
             });
 #pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
@@ -240,7 +211,6 @@ namespace Panoramio.UserControls
             var item = sender as MapItemControl;
             if (item != null)
             {
-                item.IsSelected = !item.IsSelected;
                 SelectedItem = item.ParentModel;
             }
         }

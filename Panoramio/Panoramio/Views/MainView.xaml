@@ -38,18 +38,8 @@
                          Items="{Binding MapItems}"
                          ZoomLevel="{Binding MapZoom, Mode=TwoWay}"
                          Center="{Binding MapCenter, Mode=TwoWay}"
+                         SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                          GeoBoundsChanged="OnGeoBoundsChanged" />
-        
-        <!--<maps:MapControl Name="Map"
-        micro:Message.Attach="[Event ItemClick] = [SelectingActivePurchase($clickeditem)]"
-                         Grid.Row="0"
-                         GeoBoundsChanged="{x:Bind OnGeoBoundsChanged}"
-                         MapServiceToken="fqsjezgtvc4qK76oZ8hW~azt2R3o_4LFdUjTkq5WZrQ~AnEMEHbCi3_v7OPtEiKEsQ2IDprB9gizH7eiKYzJqinc_ltzZZklRoULPoGeYqGp"
-                         VerticalAlignment="Stretch"
-                         HorizontalAlignment="Stretch"
-                         Margin="0,0,0,0" 
-                         Center="{Binding GeoCenter, Mode=TwoWay}"
-                         ZoomLevel="10"/>-->
         
         <TextBlock Text="сервер не доступен...." Opacity="0.7"
                    Foreground="Red"

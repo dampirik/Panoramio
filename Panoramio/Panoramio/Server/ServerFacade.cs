@@ -22,35 +22,15 @@ namespace Panoramio.Server
             var smaxx = maxx.ToString("G8", CultureInfo.InvariantCulture);
             var smaxy = maxy.ToString("G8", CultureInfo.InvariantCulture);
             var query = $"set={"public"}&from={from}&to={to}&minx={sminx}&miny={sminy}&maxx={smaxx}&maxy={smaxy}&size={"medium"}&mapfilter={"true"}";
-            byte[] data = null;
-            try
-            {
-                data = await ConnectHelper.LoadData(query, cancellationToken);
-            }
-            catch (TaskCanceledException ex)
-            {
-                
-            }
-            catch (Exception ex)
-            {
-                var type = ex.GetType();
 
-                //нет инета
-                //{Name = "WebException" FullName = "System.Net.WebException"}
-                //{"An error occurred while sending the request. The text associated with this error code could not be found.\r\n\r\nThe server name or address could not be resolved\r\n"}
-
-                //не корректный запрос
-                //{Name = "WebException" FullName = "System.Net.WebException"}
-                //{"The remote server returned an error: (400) Bad Request."}
-            }
-
-            //"{\"count\":0,\"has_more\":false,\"photos\":[]}"
+            var data = await ConnectHelper.LoadData(query, cancellationToken);
+            
+            if (data == null)
+                throw new NullReferenceException("data");
 
             var json = Encoding.UTF8.GetString(data);
             var result = JsonConvert.DeserializeObject<Photos>(json);
-
-
-
+            
             return result;
         }
     }

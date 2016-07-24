@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
-using Windows.Devices.Geolocation;
 using Caliburn.Micro;
 using Panoramio.Models;
-using Panoramio.UserControls;
-using System.Collections.ObjectModel;
 using Panoramio.Common;
 using Panoramio.Server.Data;
+using Panoramio.UserControls;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Windows.Devices.Geolocation;
 
 namespace Panoramio.ViewModels
 {
@@ -24,8 +25,8 @@ namespace Panoramio.ViewModels
             }
         }
 
-        private object _selectedItem;
-        public object SelectedItem
+        private MapItemModel _selectedItem;
+        public MapItemModel SelectedItem
         {
             get { return _selectedItem; }
             set
@@ -83,32 +84,7 @@ namespace Panoramio.ViewModels
                                          Latitude = 55.755831,
                                          Longitude = 37.617673
                                      });
-            MapZoom = 10;
-        }
-
-        protected override async Task LoadData()
-        {
-            //var result = await Server.ServerFacade.GetPhotos(CancellationToken.None);
-
-            //var items = result.PhotoItems.Select(photoItem => new MapItemModel
-            //                                                  {
-            //                                                      Location = new Geopoint(new BasicGeoposition
-            //                                                                              {
-            //                                                                                  Latitude =
-            //                                                                                      photoItem.Latitude,
-            //                                                                                  Longitude =
-            //                                                                                      photoItem.Longitude,
-            //                                                                              })
-            //                                                  });
-
-            //MapItems = new BindableCollection<IMapItem>(items);
-        }
-
-        public void OnMapTapped(BasicGeoposition tappedGeoPosition)
-        {
-            string status = "MapTapped at \nLatitude:" + tappedGeoPosition.Latitude + "\nLongitude: " + tappedGeoPosition.Longitude;
-            //rootPage.NotifyUser(status, NotifyType.StatusMessage);
-
+            MapZoom = 14;
         }
 
         public void Share()
@@ -121,23 +97,126 @@ namespace Panoramio.ViewModels
 
         }
 
-        public async void OnGeoBoundsChanged(GeoBounds geoBounds)
+        private CancellationTokenSource _downloadPhotoCancellationToken;
+        private int _from;
+        private const int DownloadCountByStep = 20;
+        private const int MaxDownloadCount = 100;
+
+        private async void LoadingData(GeoBounds geoBounds)
         {
-            var result =
-                await Server.ServerFacade.GetPhotos(0, 20, geoBounds.MinX, geoBounds.MinY, geoBounds.MaxX, geoBounds.MaxY,
-                        CancellationToken.None);
+            _downloadPhotoCancellationToken?.Cancel(true);
+
+            _downloadPhotoCancellationToken = new CancellationTokenSource();
+
+            _from = 0;
+            _currentDownloadItems.Clear();
+
+            while (true)
+            {
+                Photos photos = null;
+                try
+                {
+                    photos = await Server.ServerFacade.GetPhotos(_from, _from + DownloadCountByStep,
+                        geoBounds.MinX, geoBounds.MinY, geoBounds.MaxX, geoBounds.MaxY,
+                        _downloadPhotoCancellationToken.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    return;
+                }
+                catch (WebException ex)
+                {
+                    if (ex.Status == WebExceptionStatus.ProtocolError)
+                    {
+                        //TODO логирование
+                        _from += DownloadCountByStep;
+
+                        //не корректный запрос
+                        //{Name = "WebException" FullName = "System.Net.WebException"}
+                        //{"The remote server returned an error: (400) Bad Request."}
+                    }
+                    else if (ex.Status == WebExceptionStatus.NameResolutionFailure ||
+                                ex.Status == WebExceptionStatus.ConnectFailure ||
+                                ex.Status == WebExceptionStatus.UnknownError || 
+                                ex.Status == WebExceptionStatus.Timeout)
+                    {
+                        ServerIsUnavailable = true;
+                        await Task.Delay(5000);
+                        continue;
+                        //нет инета
+                        //{Name = "WebException" FullName = "System.Net.WebException"}
+                        //{"An error occurred while sending the request. The text associated with this error code could not be found.\r\n\r\nThe server name or address could not be resolved\r\n"}
+                    }
+                    else
+                    {
+                        //TODO логирование
+                        _from += DownloadCountByStep;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //TODO логирование
+                    _from += DownloadCountByStep;
+                }
+
+                if (ServerIsUnavailable)
+                    ServerIsUnavailable = false;
+
+                if (photos == null)
+                {
+                    await Task.Delay(5000);
+                    continue;
+                }
+                
+                AddPhotos(photos.PhotoItems);
+
+                if (photos.PhotoItems == null || photos.PhotoItems.Length == 0)
+                    break;
+
+                if (_from + DownloadCountByStep >= photos.Count)
+                    break;
+
+                if(_from + DownloadCountByStep >= MaxDownloadCount)
+                    break;
+
+                _from += DownloadCountByStep;
+            }
+
+            var items = _currentDownloadItems.Select(photoItem => new MapItemModel
+            {
+                Location = new Geopoint(new BasicGeoposition
+                                        {
+                                            Latitude = photoItem.Latitude,
+                                            Longitude = photoItem.Longitude,
+                                        }),
+                Id = photoItem.PhotoId
+            }).ToList();
+
+            MapItems = new ObservableRangeCollection<IMapItem>(items);
+
+            _downloadPhotoCancellationToken = null;
+        }
+
+        private readonly List<PhotoItem> _currentDownloadItems = new List<PhotoItem>();
+
+        private void AddPhotos(PhotoItem[] photoItems)
+        {
+            if (photoItems == null || photoItems.Length == 0)
+                return;
+
+            _currentDownloadItems.AddRange(photoItems);
 
             var data = MapItems == null
-                ? result.PhotoItems
-                : result.PhotoItems.Where(s => MapItems.All(item => item.Id != s.PhotoId));
+                ? photoItems
+                : photoItems.Where(s => MapItems.All(item => item.Id != s.PhotoId));
 
             var items = data.Select(photoItem => new MapItemModel
             {
                 Location = new Geopoint(new BasicGeoposition
-                {
-                    Latitude = photoItem.Latitude,
-                    Longitude = photoItem.Longitude,
-                }),
+                                        {
+                                            Latitude = photoItem.Latitude,
+                                            Longitude = photoItem.Longitude,
+                                        }),
                 Id = photoItem.PhotoId
             }).ToList();
 
@@ -145,6 +224,11 @@ namespace Panoramio.ViewModels
                 MapItems = new ObservableRangeCollection<IMapItem>(items);
             else
                 MapItems.AddRange(items);
+        }
+
+        public void OnGeoBoundsChanged(GeoBounds geoBounds)
+        {
+            LoadingData(geoBounds);
         }
     }
 }

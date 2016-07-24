@@ -30,23 +30,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="userControls:MapItemControl" >
-                    <Grid>
-                        <Grid Width="48" Height="69" x:Name="SelectedPushpin"
-                              Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Path Data="M24,68.6666667 C26.5945946,68.6666667 48,43.8205128 48,25.5128205 C48,12.058344 37.254834,0.666666667 24,0.666666667 C10.745166,0.666666667 0,12.058344 0,25.5128205 C0,43.8205128 21.4054054,68.6666667 24,68.6666667 Z"
+                    <Grid Width="20" Height="29" x:Name="NormalPushpin">
+                        <Path Data="M10,29 C11.0810811,29 20,18.4038462 20,10.5961538 C20,4.85821535 15.5228475,0 10,0 C4.4771525,0 2.84217094e-14,4.85821535 2.84217094e-14,10.5961538 C2.84217094e-14,18.4038462 8.91891892,29 10,29 Z"
                                   Fill="#FDC82F"/>
-                            <Grid Width="24" Height="24" VerticalAlignment="Top" Margin="0 12 0 0">
-                                <Ellipse Fill="#FFFFFF" />
-                            </Grid>
-                        </Grid>
-
-                        <Grid Width="20" Height="29" x:Name="NormalPushpin"
-                              Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityInvertedConverter}}">
-                            <Path Data="M10,29 C11.0810811,29 20,18.4038462 20,10.5961538 C20,4.85821535 15.5228475,0 10,0 C4.4771525,0 2.84217094e-14,4.85821535 2.84217094e-14,10.5961538 C2.84217094e-14,18.4038462 8.91891892,29 10,29 Z"
-                                  Fill="#FDC82F"/>
-                            <Grid Width="10" Height="10" VerticalAlignment="Top" Margin="0 6 0 0">
-                                <Ellipse Fill="#FFFFFF" />
-                            </Grid>
+                        <Grid Width="10" Height="10" VerticalAlignment="Top" Margin="0 6 0 0">
+                            <Ellipse Fill="#FFFFFF" />
                         </Grid>
                     </Grid>
                 </ControlTemplate>

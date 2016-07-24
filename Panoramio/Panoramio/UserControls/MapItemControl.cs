@@ -38,15 +38,6 @@ namespace Panoramio.UserControls
             set { SetValue(AnchorProperty, value); }
         }
         
-        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(
-            "IsSelected", typeof(int), typeof(MapItemControl), new PropertyMetadata(false));
-
-        public bool IsSelected
-        {
-            get { return (bool)GetValue(IsSelectedProperty); }
-            set { SetValue(IsSelectedProperty, value); }
-        }
-
         public IMapItem ParentModel { get; private set; }
 
         public Point ScreenLocation { get; private set; }
