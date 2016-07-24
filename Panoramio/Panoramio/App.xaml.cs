@@ -37,6 +37,8 @@ namespace Panoramio
 
         protected override void Configure()
         {
+           // MessageBinder.SpecialValues.Add("$clickeditem", c => ((ItemClickEventArgs)c.EventArgs).ClickedItem);
+
             _container = new WinRTContainer();
 
             _container.RegisterWinRTServices();

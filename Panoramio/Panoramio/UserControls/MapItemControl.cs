@@ -4,12 +4,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 
-namespace Panoramio.PushpinControl
+namespace Panoramio.UserControls
 {
-    public abstract class BasePushpinControl : Control
+    public class MapItemControl : Control
     {
         public static readonly DependencyProperty LocationProperty = DependencyProperty.Register(
-            "Location", typeof(Geopoint), typeof(BasePushpinControl),
+            "Location", typeof(Geopoint), typeof(MapItemControl),
             new PropertyMetadata(default(Geopoint), LocationPropertyCallback));
 
         private static void LocationPropertyCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
@@ -24,7 +24,7 @@ namespace Panoramio.PushpinControl
         }
 
         public static readonly DependencyProperty AnchorProperty = DependencyProperty.Register(
-            "Anchor", typeof(Point), typeof(BasePushpinControl),
+            "Anchor", typeof(Point), typeof(MapItemControl),
             new PropertyMetadata(default(Point), AnchorPropertyCallback));
 
         private static void AnchorPropertyCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
@@ -36,6 +36,30 @@ namespace Panoramio.PushpinControl
         {
             get { return (Point)GetValue(AnchorProperty); }
             set { SetValue(AnchorProperty, value); }
+        }
+        
+        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(
+            "IsSelected", typeof(int), typeof(MapItemControl), new PropertyMetadata(false));
+
+        public bool IsSelected
+        {
+            get { return (bool)GetValue(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
+
+        public IMapItem ParentModel { get; private set; }
+
+        public Point ScreenLocation { get; private set; }
+
+        public MapItemControl(IMapItem parent, Point location)
+        {
+            DefaultStyleKey = typeof(MapItemControl);
+            Anchor = new Point(0.5, 1);
+            DataContext = this;
+
+            Location = parent.Location;
+            ScreenLocation = location;
+            ParentModel = parent;
         }
     }
 }

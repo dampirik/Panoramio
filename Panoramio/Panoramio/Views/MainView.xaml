@@ -4,34 +4,52 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
     xmlns:converters="using:Panoramio.Converters"
-    mc:Ignorable="d">
+    xmlns:userControls="using:Panoramio.UserControls"
+    mc:Ignorable="d"
+    xmlns:micro="using:Caliburn.Micro">
 
     <Page.Resources>
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityInvertedConverter" InvertValue="true" />
-        
-        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
-        <converters:CountToVisibilityConverter x:Key="CountToVisibilityInvertedConverter" InvertValue="True" />
-        
-        <converters:HasValueToVisibilityConverter x:Key="HasValueToVisibilityConverter" />
-        <converters:HasValueToVisibilityConverter x:Key="HasValueToVisibilityInvertedConverter" InvertValue="True" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/UserControls/ItemsMapControlStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityInvertedConverter" InvertValue="true" />
+
+            <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+            <converters:CountToVisibilityConverter x:Key="CountToVisibilityInvertedConverter" InvertValue="True" />
+
+            <converters:HasValueToVisibilityConverter x:Key="HasValueToVisibilityConverter" />
+            <converters:HasValueToVisibilityConverter x:Key="HasValueToVisibilityInvertedConverter" InvertValue="True" />
+        </ResourceDictionary>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
-        <maps:MapControl Name="Map"
+
+        <userControls:ItemsMapControl 
                          Grid.Row="0"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"  
+                         Items="{Binding MapItems}"
+                         ZoomLevel="{Binding MapZoom, Mode=TwoWay}"
+                         Center="{Binding MapCenter, Mode=TwoWay}"
+                         GeoBoundsChanged="OnGeoBoundsChanged" />
+        
+        <!--<maps:MapControl Name="Map"
+        micro:Message.Attach="[Event ItemClick] = [SelectingActivePurchase($clickeditem)]"
+                         Grid.Row="0"
+                         GeoBoundsChanged="{x:Bind OnGeoBoundsChanged}"
                          MapServiceToken="fqsjezgtvc4qK76oZ8hW~azt2R3o_4LFdUjTkq5WZrQ~AnEMEHbCi3_v7OPtEiKEsQ2IDprB9gizH7eiKYzJqinc_ltzZZklRoULPoGeYqGp"
                          VerticalAlignment="Stretch"
                          HorizontalAlignment="Stretch"
                          Margin="0,0,0,0" 
                          Center="{Binding GeoCenter, Mode=TwoWay}"
-                         ZoomLevel="10"/>
+                         ZoomLevel="10"/>-->
         
         <TextBlock Text="сервер не доступен...." Opacity="0.7"
                    Foreground="Red"

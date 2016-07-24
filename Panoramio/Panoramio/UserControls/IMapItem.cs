@@ -1,9 +1,11 @@
 ﻿using Windows.Devices.Geolocation;
 
-namespace Panoramio.PushpinControl
+namespace Panoramio.UserControls
 {
-    public interface IPushpinModel
+    public interface IMapItem
     {
+        int Id { get; }
+
         Geopoint Location { get; }
     }
 }

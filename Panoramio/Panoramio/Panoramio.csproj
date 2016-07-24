@@ -98,17 +98,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ObservableRangeCollection.cs" />
     <Compile Include="Common\WindowManager.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
     <Compile Include="Converters\HasValueToVisibilityConverter.cs" />
     <Compile Include="Helpers\Helper.cs" />
-    <Compile Include="PushpinControl\BasePushpinControl.cs" />
-    <Compile Include="PushpinControl\ClusterPushpinControl.cs" />
-    <Compile Include="PushpinControl\IPushpinModel.cs" />
-    <Compile Include="PushpinControl\PushpinControl.cs" />
-    <Compile Include="PushpinControl\PushpinContainer.cs" />
-    <Compile Include="PushpinControl\PushpinController.cs" />
+    <Compile Include="Models\MapItemModel.cs" />
     <Compile Include="Server\ConnectHelper.cs" />
     <Compile Include="Server\Data\MapLocation.cs" />
     <Compile Include="Server\Data\PhotoItem.cs" />
@@ -118,6 +114,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\GeoBounds.cs" />
+    <Compile Include="UserControls\IMapItem.cs" />
+    <Compile Include="UserControls\ItemsMapControl.cs" />
+    <Compile Include="UserControls\MapItemControl.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
@@ -146,11 +146,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\MainView.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="UserControls\ItemsMapControlStyle.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PushpinControl\PushpinStyle.xaml">
+    <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

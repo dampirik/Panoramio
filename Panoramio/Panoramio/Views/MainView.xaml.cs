@@ -1,25 +1,18 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using Panoramio.UserControls;
 using Panoramio.ViewModels;
-
-// Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace Panoramio.Views
 {
-    /// <summary>
-    /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
-    /// </summary>
-    public sealed partial class MainView : Page
+    public sealed partial class MainView
     {
         public MainView()
         {
-            this.InitializeComponent();
-            Map.MapTapped += OnMapTapped;
+            InitializeComponent();
         }
 
-        private void OnMapTapped(Windows.UI.Xaml.Controls.Maps.MapControl sender, Windows.UI.Xaml.Controls.Maps.MapInputEventArgs args)
+        private void OnGeoBoundsChanged(GeoBounds geobounds)
         {
-            var tappedGeoPosition = args.Location.Position;
-            ((MainViewModel)DataContext).OnMapTapped(tappedGeoPosition);
+            ((MainViewModel) DataContext).OnGeoBoundsChanged(geobounds);
         }
     }
 }

@@ -1,11 +1,35 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:pushpinControl="using:Panoramio.PushpinControl">
+                    xmlns:userControls="using:Panoramio.UserControls"
+                    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+                    xmlns:converters="using:Panoramio.Converters">
 
-    <Style TargetType="pushpinControl:PushpinControl">
+    <Style TargetType="userControls:ItemsMapControl">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="pushpinControl:PushpinControl" >
+                <ControlTemplate TargetType="userControls:ItemsMapControl" >
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          Background="Transparent">
+                        <maps:MapControl Name="Map"
+                                         Grid.Row="0"
+                                         MapServiceToken="fqsjezgtvc4qK76oZ8hW~azt2R3o_4LFdUjTkq5WZrQ~AnEMEHbCi3_v7OPtEiKEsQ2IDprB9gizH7eiKYzJqinc_ltzZZklRoULPoGeYqGp"
+                                         VerticalAlignment="Stretch"
+                                         HorizontalAlignment="Stretch"
+                                         Margin="0,0,0,0"
+                                         ZoomLevel="10"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityInvertedConverter" InvertValue="true" />
+
+    <Style TargetType="userControls:MapItemControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="userControls:MapItemControl" >
                     <Grid>
                         <Grid Width="48" Height="69" x:Name="SelectedPushpin"
                               Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -24,34 +48,6 @@
                                 <Ellipse Fill="#FFFFFF" />
                             </Grid>
                         </Grid>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="pushpinControl:ClusterPushpinControl">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="pushpinControl:ClusterPushpinControl" >
-                    <Grid Width="42" Height="42" x:Name="ClusterPushpin">
-                        <Ellipse Grid.Row="0"
-                                 Fill="#ffc107"
-                                 StrokeThickness="0" 
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Stretch"/>
-                        <Ellipse Grid.Row="0"
-                                 Margin="2 2 2 2"
-                                 Fill="#ffc107" Stroke="White"
-                                 StrokeThickness="2" 
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Stretch"/>
-                        <TextBlock Grid.Row="0"
-                                   Text="{Binding Count}"
-                                   FontSize="20"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Foreground="White"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

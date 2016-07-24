@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +13,15 @@ namespace Panoramio.Server
     /// </summary>
     public static class ServerFacade
     {
-        public static async Task<Photos> GetPhotos(CancellationToken cancellationToken)
+        public static async Task<Photos> GetPhotos(int from, int to, double minx, double miny, double maxx, double maxy, CancellationToken cancellationToken)
         {
-            var query = $"set={"public"}&from={"0"}&to={"20"}&minx={"-180"}&miny={"-90"}&maxx={"180"}&maxy={"90"}&size={"medium"}&mapfilter={"true"}";
+            //var query = $"set={"public"}&from={"0"}&to={"20"}&minx={"-180"}&miny={"-90"}&maxx={"180"}&maxy={"90"}&size={"medium"}&mapfilter={"true"}";
+
+            var sminx = minx.ToString("G8", CultureInfo.InvariantCulture);
+            var sminy = miny.ToString("G8", CultureInfo.InvariantCulture);
+            var smaxx = maxx.ToString("G8", CultureInfo.InvariantCulture);
+            var smaxy = maxy.ToString("G8", CultureInfo.InvariantCulture);
+            var query = $"set={"public"}&from={from}&to={to}&minx={sminx}&miny={sminy}&maxx={smaxx}&maxy={smaxy}&size={"medium"}&mapfilter={"true"}";
             byte[] data = null;
             try
             {
