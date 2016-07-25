@@ -210,13 +210,8 @@ namespace Panoramio.ViewModels
             if (downloadPhotoCancellationToken.IsCancellationRequested)
                 return;
 
-            if (MapItems != null)
+            if (MapItems != null && _currentDownloadItems.Count > 0)
             {
-                if (_currentDownloadItems.Count == 0)
-                {
-                    
-                }
-
                 var removeItems = MapItems.Where(i => _currentDownloadItems.All(p => p.PhotoId != i.Id)).ToList();
 
                 foreach (var item in removeItems)
