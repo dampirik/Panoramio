@@ -32,6 +32,7 @@ namespace Panoramio.ViewModels
             set
             {
                 Set(ref _selectedItem, value);
+                OnSelectedItem(_selectedItem);
             }
         }
 
@@ -55,18 +56,29 @@ namespace Panoramio.ViewModels
             }
         }
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            set
+            {
+                Set(ref _isLoading, value);
+            }
+        }
+
         private ObservableRangeCollection<IMapItem> _mapItems;
         public ObservableRangeCollection<IMapItem> MapItems
         {
             get { return _mapItems; }
             set { Set(ref _mapItems, value); }
         }
-
+        
         public MainViewModel(INavigationService navigationService)
             : base(navigationService)
         {
 
         }
+
         protected override void OnInitialize()
         {
             base.OnInitialize();
@@ -87,24 +99,23 @@ namespace Panoramio.ViewModels
             MapZoom = 14;
         }
 
-        public void Share()
+        protected override void OnDeactivate(bool close)
         {
+            MapItems = null;
 
-        }
-
-        public void Save()
-        {
-
+            base.OnDeactivate(close);
         }
 
         private CancellationTokenSource _downloadPhotoCancellationToken;
         private int _from;
         private const int DownloadCountByStep = 20;
-        private const int MaxDownloadCount = 100;
+        private const int MaxDownloadCount = 40;
 
         private async void LoadingData(GeoBounds geoBounds)
         {
             _downloadPhotoCancellationToken?.Cancel(true);
+
+            IsLoading = true;
 
             _downloadPhotoCancellationToken = new CancellationTokenSource();
 
@@ -182,18 +193,17 @@ namespace Panoramio.ViewModels
                 _from += DownloadCountByStep;
             }
 
-            var items = _currentDownloadItems.Select(photoItem => new MapItemModel
+            if (MapItems != null)
             {
-                Location = new Geopoint(new BasicGeoposition
-                                        {
-                                            Latitude = photoItem.Latitude,
-                                            Longitude = photoItem.Longitude,
-                                        }),
-                Id = photoItem.PhotoId
-            }).ToList();
+                var removeItems = MapItems.Where(i => _currentDownloadItems.All(p => p.PhotoId != i.Id)).ToList();
 
-            MapItems = new ObservableRangeCollection<IMapItem>(items);
+                foreach (var item in removeItems)
+                {
+                    MapItems.Remove(item);
+                }
+            }
 
+            IsLoading = false;
             _downloadPhotoCancellationToken = null;
         }
 
@@ -217,7 +227,9 @@ namespace Panoramio.ViewModels
                                             Latitude = photoItem.Latitude,
                                             Longitude = photoItem.Longitude,
                                         }),
-                Id = photoItem.PhotoId
+                Id = photoItem.PhotoId,
+                PhotoUrl = photoItem.PhotoFileUrl,
+                PhotoTitle = photoItem.PhotoTitle
             }).ToList();
 
             if (MapItems == null)
@@ -229,6 +241,19 @@ namespace Panoramio.ViewModels
         public void OnGeoBoundsChanged(GeoBounds geoBounds)
         {
             LoadingData(geoBounds);
+        }
+        
+        public void OnSelectedItem(MapItemModel mapItem)
+        {
+            if (mapItem == null)
+                return;
+
+            SelectedItem = null;
+
+            NavigationService.For<SelectedPhotoViewModel>()
+                .WithParam(s => s.PhotoUrl, mapItem.PhotoUrl)
+                .WithParam(s => s.PhotoTitle, mapItem.PhotoTitle)
+                .Navigate();
         }
     }
 }

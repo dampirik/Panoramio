@@ -7,5 +7,7 @@ namespace Panoramio.UserControls
         int Id { get; }
 
         Geopoint Location { get; }
+
+        string PhotoUrl { get; }
     }
 }

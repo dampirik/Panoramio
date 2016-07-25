@@ -8,11 +8,9 @@ namespace Panoramio.Server
 {
     public static class ConnectHelper
     {
-        public const string BaseApiUrl = "http://www.panoramio.com/map/get_panoramas.php?";
-        
         public static TimeSpan ClientTimeout = new TimeSpan(0, 0, 0, 15, 0);
 
-        public static Task<byte[]> LoadData(string query, CancellationToken cancellationToken)
+        public static Task<byte[]> LoadData(string url, CancellationToken cancellationToken)
         {
             var taskCompletion = new TaskCompletionSource<byte[]>();
 
@@ -32,7 +30,7 @@ namespace Panoramio.Server
             {
                 try
                 {
-                    var request = WebRequest.CreateHttp(BaseApiUrl + query);
+                    var request = WebRequest.CreateHttp(url);
                     request.ContinueTimeout = (int)ClientTimeout.TotalMilliseconds;
                     request.BeginGetResponse(callback =>
                     {

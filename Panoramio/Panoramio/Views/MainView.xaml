@@ -6,8 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:Panoramio.Converters"
     xmlns:userControls="using:Panoramio.UserControls"
-    mc:Ignorable="d"
-    xmlns:micro="using:Caliburn.Micro">
+    mc:Ignorable="d">
 
     <Page.Resources>
         <ResourceDictionary>
@@ -47,26 +46,15 @@
                    VerticalAlignment="Top"
                    Visibility="{Binding ServerIsUnavailable, Converter={StaticResource BooleanToVisibilityConverter}}"
                    Grid.Row="0"/>
+        
+        <ProgressBar Foreground="Blue"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Top"
+                     Margin="0 5 0 0"
+                     Background="Transparent"
+                     IsIndeterminate="{Binding IsLoading}"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                     Grid.Row="0"/>
+
     </Grid>
-    
-    <Page.BottomAppBar>
-        <CommandBar Name="AppBar"
-                    Visibility="{Binding SelectedItem, Converter={StaticResource HasValueToVisibilityConverter}}"
-                    Opacity="0.6"
-                    Background="White">
-            <AppBarButton x:Name="Save"
-                          Label="сохранить">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="/Assets/Icons/AppBar/save.png" />
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Name="Share"
-                          IsEnabled="{Binding IsSearchLocation}"
-                          Label="поделиться">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="/Assets/Icons/AppBar/share.png" />
-                </AppBarButton.Icon>
-            </AppBarButton>
-        </CommandBar>
-    </Page.BottomAppBar>
 </Page>

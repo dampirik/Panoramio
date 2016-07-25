@@ -1,0 +1,51 @@
+﻿<Page
+    x:Class="Panoramio.Views.SelectedPhotoView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:Panoramio.Converters"
+    mc:Ignorable="d">
+    
+    <Page.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityInvertedConverter" InvertValue="true" />
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Grid.Row="0" Background="Black">
+            <Image Source="{Binding Photo}"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"
+                                   Stretch="Uniform"
+                                   Visibility="{Binding IsPhoto,
+                                                        Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <Image Source="/Assets/Icons/ImageNotFound.jpg"
+                                   Stretch="Fill"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"
+                                   Visibility="{Binding IsPhoto,
+                                                        Converter={StaticResource BooleanToVisibilityInvertedConverter}}" />
+        </Grid>
+    </Grid>
+    
+    <Page.BottomAppBar>
+        <CommandBar Name="AppBar"
+                    Background="White">
+            <AppBarButton x:Name="Save"
+                          Label="сохранить">
+                <AppBarButton.Icon>
+                    <BitmapIcon UriSource="/Assets/Icons/AppBar/save.png" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Share"
+                          IsEnabled="{Binding IsSearchLocation}"
+                          Label="поделиться">
+                <AppBarButton.Icon>
+                    <BitmapIcon UriSource="/Assets/Icons/AppBar/share.png" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </CommandBar>
+    </Page.BottomAppBar>
+</Page>

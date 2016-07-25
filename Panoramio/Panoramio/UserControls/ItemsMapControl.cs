@@ -76,7 +76,20 @@ namespace Panoramio.UserControls
 
                 if (e.NewValue != null)
                     ((ObservableCollection<IMapItem>) e.NewValue).CollectionChanged += control.OnItemsCollectionChanged;
+                else
+                {
+#pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
+                    control._map.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        foreach (var item in control._map.Children.OfType<MapItemControl>())
+                        {
+                            item.Photo = null;
+                        }
 
+                        control._map.Children.Clear();
+                    });
+#pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
+                }
                 control.RecreateMapItems();
             }
         }
@@ -119,6 +132,14 @@ namespace Panoramio.UserControls
                 {
                     var items = e.NewItems.OfType<IMapItem>();
                     AddMapItems(items);
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                if (e.OldItems != null && e.OldItems.Count > 0)
+                {
+                    var items = e.OldItems.OfType<IMapItem>();
+                    RemoveMapItems(items);
                 }
             }
             else
@@ -167,10 +188,39 @@ namespace Panoramio.UserControls
 #pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
             _map.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                                                                     {
+                                                                        foreach (var item in _map.Children.OfType<MapItemControl>())
+                                                                        {
+                                                                            item.Photo = null;
+                                                                        }
+                                                                        
                                                                         _map.Children.Clear();
                                                                         AddMapItems(Items);
                                                                     });
 #pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
+        }
+
+        private void RemoveMapItems(IEnumerable<IMapItem> items)
+        {
+            if (items == null)
+                return;
+
+#pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
+            _map.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                foreach (var item in items)
+                {
+                    var result = _map.Children.OfType<MapItemControl>().FirstOrDefault(s => s.ParentModel.Id == item.Id);
+
+                    if(result == null)
+                        continue;
+                    
+                    result.Photo = null;
+
+                    _map.Children.Remove(result);
+                }
+            });
+#pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до завершения вызова
+
         }
 
         private void AddMapItems(IEnumerable<IMapItem> items)
@@ -211,6 +261,8 @@ namespace Panoramio.UserControls
             var item = sender as MapItemControl;
             if (item != null)
             {
+                if (SelectedItem != null)
+                    SelectedItem = null;
                 SelectedItem = item.ParentModel;
             }
         }

@@ -30,11 +30,44 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="userControls:MapItemControl" >
-                    <Grid Width="20" Height="29" x:Name="NormalPushpin">
-                        <Path Data="M10,29 C11.0810811,29 20,18.4038462 20,10.5961538 C20,4.85821535 15.5228475,0 10,0 C4.4771525,0 2.84217094e-14,4.85821535 2.84217094e-14,10.5961538 C2.84217094e-14,18.4038462 8.91891892,29 10,29 Z"
-                                  Fill="#FDC82F"/>
-                        <Grid Width="10" Height="10" VerticalAlignment="Top" Margin="0 6 0 0">
-                            <Ellipse Fill="#FFFFFF" />
+                    <Grid Width="40" Height="50">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="10"/>
+                        </Grid.RowDefinitions>
+                        <Path Grid.Row="1"
+                              Margin="0 -2 0 0"
+                              Width="10"
+                              Height="12"
+                              Stretch="Fill"
+                              Data="m0.75,189.749984l0,-188.999984l141.000009,188.999984l-141.000009,0z" 
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Fill="Black"
+                              RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <CompositeTransform Rotation="-180" ScaleX="-1"/>
+                            </Path.RenderTransform>
+                        </Path>
+                        
+                        <Grid Grid.Row="0" Background="Black">
+                            <Image Source="{Binding Photo}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Width="38"
+                                   Height="38"
+                                   Stretch="UniformToFill"
+                                   Visibility="{Binding IsPhoto,
+                                                        Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                            <Image Source="/Assets/Icons/ImageNotFound.jpg"
+                                   Stretch="Fill"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Width="38"
+                                   Height="38"
+                                   Visibility="{Binding IsPhoto,
+                                                        Converter={StaticResource BooleanToVisibilityInvertedConverter}}" />
                         </Grid>
                     </Grid>
                 </ControlTemplate>

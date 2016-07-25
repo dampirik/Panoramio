@@ -44,7 +44,7 @@ namespace Panoramio
             _container.RegisterWinRTServices();
 
             _container.PerRequest<MainViewModel>();
-            _container.PerRequest<WindowManager>();
+            _container.PerRequest<SelectedPhotoViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
@@ -67,7 +67,20 @@ namespace Panoramio
 
         protected override void PrepareViewFirst(Frame rootFrame)
         {
-            _container.RegisterNavigationService(rootFrame);
+           // _container.RegisterNavigationService(rootFrame);
+            RegisterNavigationService(rootFrame);
+        }
+
+        public INavigationService RegisterNavigationService(Frame rootFrame, bool treatViewAsLoaded = false)
+        {
+            if (rootFrame == null)
+                throw new ArgumentNullException("rootFrame");
+
+            var frameAdapter = new CachingFrameAdapter(rootFrame, treatViewAsLoaded);
+
+            _container.RegisterInstance(typeof(INavigationService), null, frameAdapter);
+
+            return frameAdapter;
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
