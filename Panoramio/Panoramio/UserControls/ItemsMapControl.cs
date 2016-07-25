@@ -190,6 +190,7 @@ namespace Panoramio.UserControls
                                                                     {
                                                                         foreach (var item in _map.Children.OfType<MapItemControl>())
                                                                         {
+                                                                            item.Tapped -= OnChildrenTapped;
                                                                             item.Photo = null;
                                                                         }
                                                                         
@@ -213,7 +214,8 @@ namespace Panoramio.UserControls
 
                     if(result == null)
                         continue;
-                    
+
+                    result.Tapped -= OnChildrenTapped;
                     result.Photo = null;
 
                     _map.Children.Remove(result);

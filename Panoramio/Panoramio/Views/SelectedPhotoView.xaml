@@ -21,6 +21,11 @@
                                    Visibility="{Binding IsPhoto,
                                                         Converter={StaticResource BooleanToVisibilityConverter}}" />
 
+            <ProgressRing Foreground="Blue" IsActive="{Binding IsLoading}" 
+                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                          Width="100" Height="100"
+                          Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
             <Image Source="/Assets/Icons/ImageNotFound.jpg"
                                    Stretch="Fill"
                                    HorizontalAlignment="Stretch"

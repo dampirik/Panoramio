@@ -30,11 +30,18 @@ namespace Panoramio.ViewModels
             set { Set(ref _photo, value); }
         }
 
-        public bool _isPhoto;
+        private bool _isPhoto;
         public bool IsPhoto
         {
             get { return _isPhoto; }
             set { Set(ref _isPhoto, value); }
+        }
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            set { Set(ref _isLoading, value); }
         }
 
         public SelectedPhotoViewModel(INavigationService navigationService)
@@ -68,6 +75,7 @@ namespace Panoramio.ViewModels
             byte[] buffer;
 
             IsPhoto = true;
+            IsLoading = true;
 
             try
             {
@@ -117,7 +125,10 @@ namespace Panoramio.ViewModels
             catch (Exception)
             {
                 IsPhoto = false;
-                throw;
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
