@@ -101,6 +101,8 @@ namespace Panoramio.ViewModels
 
         protected override void OnDeactivate(bool close)
         {
+            _currentDownloadItems.Clear();
+            _downloadPhotoCancellationToken?.Cancel(true);
             MapItems = null;
 
             base.OnDeactivate(close);
@@ -122,6 +124,8 @@ namespace Panoramio.ViewModels
             _from = 0;
             _currentDownloadItems.Clear();
 
+            var downloadPhotoCancellationToken = _downloadPhotoCancellationToken;
+
             while (true)
             {
                 Photos photos = null;
@@ -129,9 +133,13 @@ namespace Panoramio.ViewModels
                 {
                     photos = await Server.ServerFacade.GetPhotos(_from, _from + DownloadCountByStep,
                         geoBounds.MinX, geoBounds.MinY, geoBounds.MaxX, geoBounds.MaxY,
-                        _downloadPhotoCancellationToken.Token);
+                        downloadPhotoCancellationToken.Token);
                 }
                 catch (TaskCanceledException)
+                {
+                    return;
+                }
+                catch (OperationCanceledException)
                 {
                     return;
                 }
@@ -147,9 +155,9 @@ namespace Panoramio.ViewModels
                         //{"The remote server returned an error: (400) Bad Request."}
                     }
                     else if (ex.Status == WebExceptionStatus.NameResolutionFailure ||
-                                ex.Status == WebExceptionStatus.ConnectFailure ||
-                                ex.Status == WebExceptionStatus.UnknownError || 
-                                ex.Status == WebExceptionStatus.Timeout)
+                             ex.Status == WebExceptionStatus.ConnectFailure ||
+                             ex.Status == WebExceptionStatus.UnknownError ||
+                             ex.Status == WebExceptionStatus.Timeout)
                     {
                         ServerIsUnavailable = true;
                         await Task.Delay(5000);
@@ -170,6 +178,9 @@ namespace Panoramio.ViewModels
                     _from += DownloadCountByStep;
                 }
 
+                if (downloadPhotoCancellationToken.IsCancellationRequested)
+                    return;
+
                 if (ServerIsUnavailable)
                     ServerIsUnavailable = false;
 
@@ -178,7 +189,10 @@ namespace Panoramio.ViewModels
                     await Task.Delay(5000);
                     continue;
                 }
-                
+
+                if (downloadPhotoCancellationToken.IsCancellationRequested)
+                    return;
+
                 AddPhotos(photos.PhotoItems);
 
                 if (photos.PhotoItems == null || photos.PhotoItems.Length == 0)
@@ -193,8 +207,16 @@ namespace Panoramio.ViewModels
                 _from += DownloadCountByStep;
             }
 
+            if (downloadPhotoCancellationToken.IsCancellationRequested)
+                return;
+
             if (MapItems != null)
             {
+                if (_currentDownloadItems.Count == 0)
+                {
+                    
+                }
+
                 var removeItems = MapItems.Where(i => _currentDownloadItems.All(p => p.PhotoId != i.Id)).ToList();
 
                 foreach (var item in removeItems)
